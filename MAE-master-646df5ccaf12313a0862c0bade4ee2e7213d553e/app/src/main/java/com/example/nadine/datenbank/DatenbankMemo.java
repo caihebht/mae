@@ -9,12 +9,14 @@ public class DatenbankMemo {
     private String product;
     private int quantity;
     private long id;
+    private byte[] image;
 
 
-    public DatenbankMemo(String product, int quantity, long id) {
+    public DatenbankMemo(String product, int quantity, long id, byte[] image) {
         this.product = product;
         this.quantity = quantity;
         this.id = id;
+        this.image = image;
     }
 
 
@@ -25,7 +27,6 @@ public class DatenbankMemo {
     public void setProduct(String product) {
         this.product = product;
     }
-
 
     public int getQuantity() {
         return quantity;
@@ -41,6 +42,10 @@ public class DatenbankMemo {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public byte[] getImage (){
+        return image;
     }
 
     @Override

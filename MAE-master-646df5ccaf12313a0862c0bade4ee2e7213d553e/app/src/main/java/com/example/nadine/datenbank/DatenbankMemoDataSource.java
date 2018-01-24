@@ -11,6 +11,7 @@ import android.util.Log;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,8 @@ public class DatenbankMemoDataSource {
     private String[] columns = {
             DatenbankMemoHelper.COLUMN_ID,
             DatenbankMemoHelper.COLUMN_PRODUCT,
-            DatenbankMemoHelper.COLUMN_QUANTITY
+            DatenbankMemoHelper.COLUMN_QUANTITY,
+            DatenbankMemoHelper.COLUMN_IMAGE_DATA
     };
 
     // VERBINDUNG ZUR DATENBANK
@@ -45,10 +47,11 @@ public class DatenbankMemoDataSource {
     }
 
     // ERSTELLEN DER DATENBANK
-    public DatenbankMemo createDatenbankMemo(String product, int quantity) {
+    public DatenbankMemo createDatenbankMemo(String product, int quantity, byte[] image) {
         ContentValues values = new ContentValues();
         values.put(DatenbankMemoHelper.COLUMN_PRODUCT, product);
         values.put(DatenbankMemoHelper.COLUMN_QUANTITY, quantity);
+        values.put(DatenbankMemoHelper.COLUMN_IMAGE_DATA, image);
 
         long insertId = database.insert(DatenbankMemoHelper.TABLE_SHOPPING_LIST, null, values);
 
@@ -99,12 +102,14 @@ public class DatenbankMemoDataSource {
         int idIndex = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_ID);
         int idProduct = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_PRODUCT);
         int idQuantity = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_QUANTITY);
+        int idImagedata = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_IMAGE_DATA);
 
         String product = cursor.getString(idProduct);
         int quantity = cursor.getInt(idQuantity);
         long id = cursor.getLong(idIndex);
+        byte [] image = cursor.getBlob(idImagedata);
 
-        DatenbankMemo shoppingMemo = new DatenbankMemo(product, quantity, id);
+        DatenbankMemo shoppingMemo = new DatenbankMemo(product, quantity, id, image);
 
         return shoppingMemo;
     }

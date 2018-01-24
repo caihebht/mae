@@ -21,13 +21,15 @@ public class DatenbankMemoHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_PRODUCT = "product";
     public static final String COLUMN_QUANTITY = "quantity";
+    public static final String COLUMN_IMAGE_NAME = "image_name";
+    public static final String COLUMN_IMAGE_DATA = "image_data";
 
     public static final String SQL_CREATE =
             "CREATE TABLE " + TABLE_SHOPPING_LIST +
                     "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_PRODUCT + " TEXT NOT NULL, " +
-                    COLUMN_QUANTITY + " INTEGER NOT NULL);";
-
+                    COLUMN_QUANTITY + " INTEGER NOT NULL) "
+                    + COLUMN_IMAGE_DATA + " BLOB) ;";
 
     public DatenbankMemoHelper(Context context) {
         //super(context, "PLATZHALTER_DATENBANKNAME", null, 1);

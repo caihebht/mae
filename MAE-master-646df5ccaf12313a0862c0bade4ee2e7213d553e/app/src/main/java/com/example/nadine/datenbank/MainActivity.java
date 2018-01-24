@@ -1,9 +1,16 @@
 package com.example.nadine.datenbank;
 
+import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +20,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.security.AccessController;
 import java.util.List;
 
 import android.view.inputmethod.InputMethodManager;
@@ -29,19 +39,33 @@ import android.widget.AbsListView;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import static java.security.AccessController.getContext;
+
+
+public class MainActivity extends AppCompatActivity{
+
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     private DatenbankMemoDataSource dataSource;
 
-    ImageView iv;
+    ImageView shoppingimage;
     Button btn;
     Intent intent1;
     final int requcode = 3;
     Uri bilduri;
     Bitmap bm;
     InputStream is;
+    private boolean isSelect = false;
+
+
+    private static final int SELECT_PHOTO =1;
+    private static final int CAPTURE_PHOTO =2;
+
+    DatenbankMemoHelper dbHelper;
+
+    Bitmap thumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +74,79 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
         dataSource = new DatenbankMemoDataSource(this);
-
         activateAddButton();
         initializeContextualActionBar();
+
+        final Button pickImage= (Button)findViewById(R.id.pick_image);
+        pickImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                intent1 = new Intent(Intent.ACTION_GET_CONTENT);
+                intent1.setType("image/*");
+                startActivityForResult(intent1,requcode );
+            }
+        });
     }
 
+        //Berechtigung der Kamera Zugriff
+       /* if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            shoppingimage.setEnabled(false);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},CAPTURE_PHOTO);
+        }else{
+            shoppingimage.setEnabled(true);
+        }
+
+        dbHelper = new DatenbankMemoHelper(this);
+    }
+   /* public void onClickpickimage (View view) {
+        new MaterialDialog.Builder(this)
+                .title("Suchen Sie Bild aus: ")
+                .items(R.array.uploadImages)
+                .itemsIds(R.array.itemIds)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        switch (position) {
+                            case 0:
+                                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                                photoPickerIntent.setType("image/*");
+                                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                                break;
+                            case 1:
+                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(intent, CAPTURE_PHOTO);
+                                break;
+                            case 2:
+                                shoppingimage.setImageResource(R.drawable.test);
+                                break;
+                        }
+                    }
+                })
+                .show();
+    }
+*/
+
+
+   /* public void onClickpickimage (View view) {
+        Log.d("pickimage", "pickimage!!!!");
+        AlertDialog.Builder imgbuilder = new AlertDialog.Builder(this);
+                imgbuilder.setTitle("Suchen Sie Bild aus: ")
+                        .setItems(R.array.uploadImages,new DialogInterface.OnCancelListener(){
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+
+                            }
+
+                            public void onClick(DialogInterface dialog, int item){
+                               Toast.makeText(getContext(),"item",+item, Toast.LENGTH_SHORT).show();
+
+                            }
+
+
+                        });
+
+    }*/
     // ANZEIGEN ALLER EINTRÄGE
     private void showAllListEntries() {
         List<DatenbankMemo> shoppingMemoList = dataSource.getAllShoppingMemos();
@@ -88,11 +180,33 @@ public class MainActivity extends AppCompatActivity {
         dataSource.close();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if(requestCode == requcode){
+                bilduri = data.getData();
+                try {
+                    is = getContentResolver().openInputStream(bilduri);
+                    bm = BitmapFactory.decodeStream(is);
+                    shoppingimage.setImageBitmap(bm);
+                    isSelect = true;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    isSelect = false;
+                }
+            }
+
+        }
+    }
+
     /// EINTRÄGE HINZUFÜGEN DURCH DEN "ADD-BUTTON"
     private void activateAddButton() {
         Button buttonAddProduct = (Button) findViewById(R.id.button_add_product);
         final EditText editTextQuantity = (EditText) findViewById(R.id.editText_quantity);
         final EditText editTextProduct = (EditText) findViewById(R.id.editText_product);
+        shoppingimage = (ImageView)findViewById(R.id.shoppingimage);
+
 
         buttonAddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +228,20 @@ public class MainActivity extends AppCompatActivity {
                 editTextQuantity.setText("");
                 editTextProduct.setText("");
 
-                dataSource.createDatenbankMemo(product, quantity);
+                if (isSelect == false){
+                    return;
+                }
+                // Bitmap Bild wird zur byte [] konventiert
+                shoppingimage.setDrawingCacheEnabled(true);
+                shoppingimage.buildDrawingCache();
+                Bitmap bitmap = shoppingimage.getDrawingCache();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 200, baos);
+                byte[] data = baos.toByteArray();
+
+                Log.d("datenbank", "vorbereitung");
+
+                dataSource.createDatenbankMemo(product, quantity, data);
 
                 InputMethodManager inputMethodManager;
                 inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -127,6 +254,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+
+
 
     private void initializeContextualActionBar() {
 
@@ -297,4 +428,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

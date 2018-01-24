@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Datenbank.iml" filepath="$PROJECT_DIR$/Datenbank.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MAE-master-646df5ccaf12313a0862c0bade4ee2e7213d553e.iml" filepath="$PROJECT_DIR$/MAE-master-646df5ccaf12313a0862c0bade4ee2e7213d553e.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
