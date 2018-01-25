@@ -11,7 +11,6 @@ import android.util.Log;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class DatenbankMemoDataSource {
             DatenbankMemoHelper.COLUMN_ID,
             DatenbankMemoHelper.COLUMN_PRODUCT,
             DatenbankMemoHelper.COLUMN_QUANTITY,
-            DatenbankMemoHelper.COLUMN_IMAGE_DATA
+            DatenbankMemoHelper.COLUMN_IMAGE_PATH
     };
 
     // VERBINDUNG ZUR DATENBANK
@@ -47,11 +46,11 @@ public class DatenbankMemoDataSource {
     }
 
     // ERSTELLEN DER DATENBANK
-    public DatenbankMemo createDatenbankMemo(String product, int quantity, byte[] image) {
+    public DatenbankMemo createDatenbankMemo(String product, int quantity, String imagepath) {
         ContentValues values = new ContentValues();
         values.put(DatenbankMemoHelper.COLUMN_PRODUCT, product);
         values.put(DatenbankMemoHelper.COLUMN_QUANTITY, quantity);
-        values.put(DatenbankMemoHelper.COLUMN_IMAGE_DATA, image);
+        values.put(DatenbankMemoHelper.COLUMN_IMAGE_PATH, imagepath);
 
         long insertId = database.insert(DatenbankMemoHelper.TABLE_SHOPPING_LIST, null, values);
 
@@ -102,14 +101,14 @@ public class DatenbankMemoDataSource {
         int idIndex = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_ID);
         int idProduct = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_PRODUCT);
         int idQuantity = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_QUANTITY);
-        int idImagedata = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_IMAGE_DATA);
+        int idImagepath = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_IMAGE_PATH);
 
         String product = cursor.getString(idProduct);
         int quantity = cursor.getInt(idQuantity);
         long id = cursor.getLong(idIndex);
-        byte [] image = cursor.getBlob(idImagedata);
+        String imagepath = cursor.getString(idImagepath);
 
-        DatenbankMemo shoppingMemo = new DatenbankMemo(product, quantity, id, image);
+        DatenbankMemo shoppingMemo = new DatenbankMemo(product, quantity, id, imagepath);
 
         return shoppingMemo;
     }
@@ -125,10 +124,14 @@ public class DatenbankMemoDataSource {
         cursor.moveToFirst();
         DatenbankMemo shoppingMemo;
 
+        /* während der cursor nicht bis letzte Zeile läuft, wird pro Rheihe eine DatenbankMemo (bzw ein Datensatz)
+            durch den Methode cursoToDatenbanMemo generierte, und dann zu shoppingMenoList hingefügt
+         */
+
         while (!cursor.isAfterLast()) {
             shoppingMemo = cursorToDatenbankMemo(cursor);
             shoppingMemoList.add(shoppingMemo);
-            Log.d(LOG_TAG, "ID: " + shoppingMemo.getId() + ", Inhalt: " + shoppingMemo.toString());
+            Log.d(LOG_TAG, "ID: " + shoppingMemo.getId() + ", Inhalt: " + shoppingMemo.toString() + " Bildpfade: "+ shoppingMemo.getImagepath());
             cursor.moveToNext();
         }
 

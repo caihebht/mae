@@ -9,14 +9,14 @@ public class DatenbankMemo {
     private String product;
     private int quantity;
     private long id;
-    private byte[] image;
+    private String imagepath;
 
 
-    public DatenbankMemo(String product, int quantity, long id, byte[] image) {
+    public DatenbankMemo(String product, int quantity, long id, String imagepath) {
         this.product = product;
         this.quantity = quantity;
         this.id = id;
-        this.image = image;
+        this.imagepath = imagepath;
     }
 
 
@@ -44,13 +44,13 @@ public class DatenbankMemo {
         this.id = id;
     }
 
-    public byte[] getImage (){
-        return image;
+    public String getImagepath (){
+        return imagepath;
     }
 
     @Override
     public String toString() {
-        String output = quantity + " x " + product;
+        String output = quantity + " x " + product ;
 
         return output;
     }

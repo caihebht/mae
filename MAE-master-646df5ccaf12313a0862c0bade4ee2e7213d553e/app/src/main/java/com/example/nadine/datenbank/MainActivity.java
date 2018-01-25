@@ -1,16 +1,10 @@
 package com.example.nadine.datenbank;
 
-import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,10 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.security.AccessController;
 import java.util.List;
 
 import android.view.inputmethod.InputMethodManager;
@@ -39,9 +31,6 @@ import android.widget.AbsListView;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
-import android.widget.Toast;
-
-import static java.security.AccessController.getContext;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -51,21 +40,18 @@ public class MainActivity extends AppCompatActivity{
     private DatenbankMemoDataSource dataSource;
 
     ImageView shoppingimage;
-    Button btn;
     Intent intent1;
     final int requcode = 3;
     Uri bilduri;
-    Bitmap bm;
-    InputStream is;
-    private boolean isSelect = false;
+    Bitmap bitmap;
+    InputStream minputStream;
+    private boolean isSelectimage = false;
+
 
 
     private static final int SELECT_PHOTO =1;
     private static final int CAPTURE_PHOTO =2;
 
-    DatenbankMemoHelper dbHelper;
-
-    Bitmap thumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,7 +136,17 @@ public class MainActivity extends AppCompatActivity{
     // ANZEIGEN ALLER EINTRÄGE
     private void showAllListEntries() {
         List<DatenbankMemo> shoppingMemoList = dataSource.getAllShoppingMemos();
-
+        Uri testuri = Uri.parse("content://com.android.providers.media.documents/document/image%3A65262");
+        /*DatenbankMemo [] arrayDatenbankMemo = shoppingMemoList.toArray(new DatenbankMemo[shoppingMemoList.size()]);
+                Uri guri = Uri.parse(arrayDatenbankMemo[arrayDatenbankMemo.length].getImagepath());
+                try {
+                    minputStream = getContentResolver().openInputStream(guri);
+                    bitmap = BitmapFactory.decodeStream(minputStream);
+                    shoppingimage.setImageBitmap(bitmap);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+        */
         ArrayAdapter<DatenbankMemo> shoppingMemoArrayAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_multiple_choice,
@@ -186,14 +182,16 @@ public class MainActivity extends AppCompatActivity{
         if(resultCode == RESULT_OK){
             if(requestCode == requcode){
                 bilduri = data.getData();
+                Log.d("datenbank","pfad:  " +bilduri.toString());
+                Uri testuri = Uri.parse("content://com.android.providers.media.documents/document/image%3A65262");
                 try {
-                    is = getContentResolver().openInputStream(bilduri);
-                    bm = BitmapFactory.decodeStream(is);
-                    shoppingimage.setImageBitmap(bm);
-                    isSelect = true;
+                    minputStream = getContentResolver().openInputStream(testuri);
+                    bitmap = BitmapFactory.decodeStream(minputStream);
+                    shoppingimage.setImageBitmap(bitmap);
+                    isSelectimage = true;
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                    isSelect = false;
+                    isSelectimage = false;
                 }
             }
 
@@ -228,20 +226,29 @@ public class MainActivity extends AppCompatActivity{
                 editTextQuantity.setText("");
                 editTextProduct.setText("");
 
-                if (isSelect == false){
-                    return;
-                }
+
                 // Bitmap Bild wird zur byte [] konventiert
-                shoppingimage.setDrawingCacheEnabled(true);
+               /* shoppingimage.setDrawingCacheEnabled(true);
                 shoppingimage.buildDrawingCache();
                 Bitmap bitmap = shoppingimage.getDrawingCache();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 200, baos);
                 byte[] data = baos.toByteArray();
+                */
 
-                Log.d("datenbank", "vorbereitung");
+               /* kein Bild ausgesucht -->imagepath = leere String:
+                    imagepath  = bilduri.toString(); ---> Uri --> in String umwandeln
+                */
+               String imagepath;
+               if (isSelectimage == false){
+                   imagepath = "";
+               }else {
+                   imagepath  = bilduri.toString();
+               }
 
-                dataSource.createDatenbankMemo(product, quantity, data);
+               
+
+                dataSource.createDatenbankMemo(product, quantity, imagepath);
 
                 InputMethodManager inputMethodManager;
                 inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -409,7 +416,7 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items to the action bar if it minputStream present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
