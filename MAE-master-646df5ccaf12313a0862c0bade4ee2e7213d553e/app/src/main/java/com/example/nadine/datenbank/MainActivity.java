@@ -159,16 +159,6 @@ public class MainActivity extends AppCompatActivity{
     private void showAllListEntries() {
         List<DatenbankMemo> shoppingMemoList = dataSource.getAllShoppingMemos();
         Uri testuri = Uri.parse("content://com.android.providers.media.documents/document/image%3A65262");
-        /*DatenbankMemo [] arrayDatenbankMemo = shoppingMemoList.toArray(new DatenbankMemo[shoppingMemoList.size()]);
-                Uri guri = Uri.parse(arrayDatenbankMemo[arrayDatenbankMemo.length].getImagepath());
-                try {
-                    minputStream = getContentResolver().openInputStream(guri);
-                    bitmap = BitmapFactory.decodeStream(minputStream);
-                    shoppingimage.setImageBitmap(bitmap);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-        */
         ArrayAdapter<DatenbankMemo> shoppingMemoArrayAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_multiple_choice,
@@ -261,6 +251,11 @@ public class MainActivity extends AppCompatActivity{
 
                /* kein Bild ausgesucht -->imagepath = leere String:
                     imagepath  = bilduri.toString(); ---> Uri --> in String umwandeln
+
+
+                    Richitig Pfade von URI herausfinden
+                    Bildpfade  zu file://**** Konvetieren!!!
+                     bsp file:///storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20180127-WA0000.jpg
                 */
                String imagepath="";
                if (isSelectimage == false){
@@ -489,8 +484,7 @@ public class MainActivity extends AppCompatActivity{
 
         return builder.create();
     }
-
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it minputStream present.
