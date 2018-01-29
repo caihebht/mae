@@ -1,10 +1,15 @@
 package com.example.nadine.datenbank;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +21,7 @@ import android.widget.ListView;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import android.view.inputmethod.InputMethodManager;
@@ -40,12 +46,14 @@ public class MainActivity extends AppCompatActivity{
     private DatenbankMemoDataSource dataSource;
 
     ImageView shoppingimage;
-    Intent intent1;
+    Intent intent1 = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
     final int requcode = 3;
     Uri bilduri;
     Bitmap bitmap;
     InputStream minputStream;
     private boolean isSelectimage = false;
+    OutputStream moutputStream;
+    public static final int KITKAT_VALUE = 1002;
 
 
 
@@ -63,14 +71,28 @@ public class MainActivity extends AppCompatActivity{
         activateAddButton();
         initializeContextualActionBar();
 
+
         final Button pickImage= (Button)findViewById(R.id.pick_image);
         pickImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT < 19) {
+                    intent1 = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent1.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent1.setType("*/*");
+                    startActivityForResult(intent1, KITKAT_VALUE);
+                } else {
+                    intent1 = new Intent();
+                    intent1.setAction(Intent.ACTION_GET_CONTENT);
+                    intent1.setType("image/*");
+                    startActivityForResult(intent1, KITKAT_VALUE);
+                }
 
-                intent1 = new Intent(Intent.ACTION_GET_CONTENT);
+                /*
+                intent1 = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 intent1.setType("image/*");
                 startActivityForResult(intent1,requcode );
+                */
             }
         });
     }
@@ -178,14 +200,14 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            if(requestCode == requcode){
+            if(requestCode == KITKAT_VALUE){
                 bilduri = data.getData();
                 Log.d("datenbank","pfad:  " +bilduri.toString());
-                Uri testuri = Uri.parse("content://com.android.providers.media.documents/document/image%3A65262");
                 try {
-                    minputStream = getContentResolver().openInputStream(testuri);
+                    minputStream = getContentResolver().openInputStream(bilduri);
                     bitmap = BitmapFactory.decodeStream(minputStream);
                     shoppingimage.setImageBitmap(bitmap);
                     isSelectimage = true;
@@ -207,6 +229,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         buttonAddProduct.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
 
@@ -239,17 +262,29 @@ public class MainActivity extends AppCompatActivity{
                /* kein Bild ausgesucht -->imagepath = leere String:
                     imagepath  = bilduri.toString(); ---> Uri --> in String umwandeln
                 */
-               String imagepath;
+               String imagepath="";
                if (isSelectimage == false){
                    imagepath = "";
                }else {
-                   imagepath  = bilduri.toString();
+                   String wholeID = DocumentsContract.getDocumentId(bilduri);
+                   String id = wholeID.split(":")[1];
+                   String[] column = { MediaStore.Images.Media.DATA };
+                   String sel = MediaStore.Images.Media._ID + "=?";
+
+                   Cursor cursor = getContentResolver().
+                           query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                   column, sel, new String[]{ id }, null);
+
+                   int columnIndex = cursor.getColumnIndex(column[0]);
+
+                   if (cursor.moveToFirst()) {
+                       imagepath = "file://"+ cursor.getString(columnIndex);
+                   }
+
+                   cursor.close();
                }
 
-               
-
                 dataSource.createDatenbankMemo(product, quantity, imagepath);
-
                 InputMethodManager inputMethodManager;
                 inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 if (getCurrentFocus() != null) {
@@ -318,6 +353,8 @@ public class MainActivity extends AppCompatActivity{
                 boolean returnValue = true;
                 SparseBooleanArray touchedShoppingMemosPositions = shoppingMemosListView.getCheckedItemPositions();
 
+
+
                 switch (item.getItemId()) {
                     case R.id.cab_delete:
                         for (int i = 0; i < touchedShoppingMemosPositions.size(); i++) {
@@ -349,6 +386,46 @@ public class MainActivity extends AppCompatActivity{
 
                         mode.finish();
                         break;
+                    case R.id.show_image:
+                        Log.d(LOG_TAG, "Bild Zeigen");
+                        boolean isChecked = touchedShoppingMemosPositions.valueAt(0);
+                        if (isChecked) {
+                            int postitionInListView = touchedShoppingMemosPositions.keyAt(0);
+                            DatenbankMemo shoppingMemo = (DatenbankMemo) shoppingMemosListView.getItemAtPosition(postitionInListView);
+                            Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + shoppingMemo.toString());
+
+                            Uri showimageuri = Uri.parse(shoppingMemo.getImagepath());
+                            try {
+                                minputStream = getContentResolver().openInputStream(showimageuri);
+                                bitmap = BitmapFactory.decodeStream(minputStream);
+                                shoppingimage.setImageBitmap(bitmap);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                                Log.d ("exception","Fehler!!!!");
+                            }
+                        }
+                       /*
+                        for (int i = 0; i < touchedShoppingMemosPositions.size(); i++) {
+                            boolean isChecked = touchedShoppingMemosPositions.valueAt(i);
+                            if (isChecked) {
+                                int postitionInListView = touchedShoppingMemosPositions.keyAt(i);
+                                DatenbankMemo shoppingMemo = (DatenbankMemo) shoppingMemosListView.getItemAtPosition(postitionInListView);
+                                Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + shoppingMemo.toString());
+
+                                Uri showimage = Uri.parse(shoppingMemo.getImagepath());
+                                try {
+                                    moutputStream = getContentResolver().openOutputStream(showimage);
+                                    bitmap = BitmapFactory.decodeStream(minputStream);
+                                    shoppingimage.setImageBitmap(bitmap);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }*/
+
+                        mode.finish();
+                        break;
+
 
                     default:
                         returnValue = false;
