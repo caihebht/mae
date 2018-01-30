@@ -22,7 +22,7 @@ public class DatenbankMemoDataSource {
     private DatenbankMemoHelper dbHelper;
 
     private String[] columns = {
-            DatenbankMemoHelper.COLUMN_ID,
+            DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID,
             DatenbankMemoHelper.COLUMN_PRODUCT,
             DatenbankMemoHelper.COLUMN_QUANTITY,
             DatenbankMemoHelper.COLUMN_IMAGE_PATH
@@ -52,10 +52,10 @@ public class DatenbankMemoDataSource {
         values.put(DatenbankMemoHelper.COLUMN_QUANTITY, quantity);
         values.put(DatenbankMemoHelper.COLUMN_IMAGE_PATH, imagepath);
 
-        long insertId = database.insert(DatenbankMemoHelper.TABLE_SHOPPING_LIST, null, values);
+        long insertId = database.insert(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM, null, values);
 
-        Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LIST,
-                columns, DatenbankMemoHelper.COLUMN_ID + "=" + insertId,
+        Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
+                columns, DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + insertId,
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -69,8 +69,8 @@ public class DatenbankMemoDataSource {
     public void deleteShoppingMemo(DatenbankMemo datenbankMemo) {
         long id = datenbankMemo.getId();
 
-        database.delete(DatenbankMemoHelper.TABLE_SHOPPING_LIST,
-                DatenbankMemoHelper.COLUMN_ID + "=" + id,
+        database.delete(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
+                DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + id,
                 null);
 
         Log.d(LOG_TAG, "Eintrag gelöscht! ID: " + id + " Inhalt: " + datenbankMemo.toString());
@@ -81,13 +81,13 @@ public class DatenbankMemoDataSource {
         values.put(DatenbankMemoHelper.COLUMN_PRODUCT, newProduct);
         values.put(DatenbankMemoHelper.COLUMN_QUANTITY, newQuantity);
 
-        database.update(DatenbankMemoHelper.TABLE_SHOPPING_LIST,
+        database.update(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
                 values,
-                DatenbankMemoHelper.COLUMN_ID + "=" + id,
+                DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + id,
                 null);
 
-        Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LIST,
-                columns, DatenbankMemoHelper.COLUMN_ID + "=" + id,
+        Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
+                columns, DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + id,
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -98,7 +98,7 @@ public class DatenbankMemoDataSource {
     }
 
     private DatenbankMemo cursorToDatenbankMemo(Cursor cursor) {
-        int idIndex = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_ID);
+        int idIndex = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID);
         int idProduct = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_PRODUCT);
         int idQuantity = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_QUANTITY);
         int idImagepath = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_IMAGE_PATH);
@@ -118,7 +118,7 @@ public class DatenbankMemoDataSource {
     public List<DatenbankMemo> getAllShoppingMemos() {
         List<DatenbankMemo> shoppingMemoList = new ArrayList<>();
 
-        Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LIST,
+        Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
                 columns, null, null, null, null, null);
 
         cursor.moveToFirst();

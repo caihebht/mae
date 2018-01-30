@@ -13,21 +13,28 @@ public class DatenbankMemoHelper extends SQLiteOpenHelper {
 
     private static final String LOG_TAG = DatenbankMemoHelper.class.getSimpleName();
 
+
     public static final String DB_NAME = "shopping_list.db";
     public static final int DB_VERSION = 1;
 
-    public static final String TABLE_SHOPPING_LIST = "shopping_list";
-
-    public static final String COLUMN_ID = "_id";
+    // Einkaufslist Artikel
+    public static final String TABLE_SHOPPING_LISTITEM = "shopping_listitems";
+    public static final String COLUMN_SHOPPINGLISTITEM_ID = "_id";
     public static final String COLUMN_PRODUCT = "product";
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_IMAGE_PATH = "imagepath";
 
-    // bei CREATE TABLE "_" nicht erlaubt z.b image_path --> erro
+    // Einkaufslist übersicht
+    public static final  String TABLE_SHOPPINGLIST = "shopping_list";
+    public static final  String COLUMN_ID = "shoppinglist_id";
+    public static final  String COLUMN_SHOPPLIST_NAME = "name";
+
+
+    // SQL statment zum Erzeugen von Einkaufslist Artikel
 
     public static final String SQL_CREATE =
-            "CREATE TABLE " + TABLE_SHOPPING_LIST +
-                    "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "CREATE TABLE " + TABLE_SHOPPING_LISTITEM +
+                    "(" + COLUMN_SHOPPINGLISTITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_PRODUCT + " TEXT NOT NULL, " +
                     COLUMN_QUANTITY + " INTEGER NOT NULL, "
                     + COLUMN_IMAGE_PATH + " TEXT NOT NULL);";
@@ -37,6 +44,7 @@ public class DatenbankMemoHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
         Log.d(LOG_TAG, "DbHelper hat die Datenbank: " + getDatabaseName() + " erzeugt.");
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {

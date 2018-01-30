@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity{
     Bitmap bitmap;
     InputStream minputStream;
     private boolean isSelectimage = false;
-    OutputStream moutputStream;
     public static final int KITKAT_VALUE = 1002;
 
 
@@ -70,7 +69,6 @@ public class MainActivity extends AppCompatActivity{
         dataSource = new DatenbankMemoDataSource(this);
         activateAddButton();
         initializeContextualActionBar();
-
 
         final Button pickImage= (Button)findViewById(R.id.pick_image);
         pickImage.setOnClickListener(new View.OnClickListener() {
@@ -158,7 +156,6 @@ public class MainActivity extends AppCompatActivity{
     // ANZEIGEN ALLER EINTRÄGE
     private void showAllListEntries() {
         List<DatenbankMemo> shoppingMemoList = dataSource.getAllShoppingMemos();
-        Uri testuri = Uri.parse("content://com.android.providers.media.documents/document/image%3A65262");
         ArrayAdapter<DatenbankMemo> shoppingMemoArrayAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_multiple_choice,
@@ -239,22 +236,12 @@ public class MainActivity extends AppCompatActivity{
                 editTextQuantity.setText("");
                 editTextProduct.setText("");
 
-
-                // Bitmap Bild wird zur byte [] konventiert
-               /* shoppingimage.setDrawingCacheEnabled(true);
-                shoppingimage.buildDrawingCache();
-                Bitmap bitmap = shoppingimage.getDrawingCache();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 200, baos);
-                byte[] data = baos.toByteArray();
-                */
-
                /* kein Bild ausgesucht -->imagepath = leere String:
                     imagepath  = bilduri.toString(); ---> Uri --> in String umwandeln
 
 
-                    Richitig Pfade von URI herausfinden
-                    Bildpfade  zu file://**** Konvetieren!!!
+                    Richitige Pfad von URI herausfinden
+                    Bildpfad  zu file://**** Konvetieren!!!
                      bsp file:///storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20180127-WA0000.jpg
                 */
                String imagepath="";
@@ -359,6 +346,7 @@ public class MainActivity extends AppCompatActivity{
                                 DatenbankMemo shoppingMemo = (DatenbankMemo) shoppingMemosListView.getItemAtPosition(postitionInListView);
                                 Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + shoppingMemo.toString());
                                 dataSource.deleteShoppingMemo(shoppingMemo);
+                                shoppingimage.setImageResource(0);
                             }
                         }
                         showAllListEntries();
@@ -399,25 +387,6 @@ public class MainActivity extends AppCompatActivity{
                                 Log.d ("exception","Fehler!!!!");
                             }
                         }
-                       /*
-                        for (int i = 0; i < touchedShoppingMemosPositions.size(); i++) {
-                            boolean isChecked = touchedShoppingMemosPositions.valueAt(i);
-                            if (isChecked) {
-                                int postitionInListView = touchedShoppingMemosPositions.keyAt(i);
-                                DatenbankMemo shoppingMemo = (DatenbankMemo) shoppingMemosListView.getItemAtPosition(postitionInListView);
-                                Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + shoppingMemo.toString());
-
-                                Uri showimage = Uri.parse(shoppingMemo.getImagepath());
-                                try {
-                                    moutputStream = getContentResolver().openOutputStream(showimage);
-                                    bitmap = BitmapFactory.decodeStream(minputStream);
-                                    shoppingimage.setImageBitmap(bitmap);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }*/
-
                         mode.finish();
                         break;
 
@@ -484,7 +453,7 @@ public class MainActivity extends AppCompatActivity{
 
         return builder.create();
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it minputStream present.
