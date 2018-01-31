@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.nadine.datenbank.Main2Activity">
+    tools:context="com.example.nadine.datenbank.Shoppinglist">
 
     <ListView
         android:id="@+id/listView"
@@ -13,5 +13,7 @@
         android:layout_marginTop="100dp"
         android:divider="@color/material_blue_grey_800"
         android:dividerHeight="1dp" />
+
+
 
 </android.support.constraint.ConstraintLayout>

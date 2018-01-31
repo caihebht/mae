@@ -10,9 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
@@ -24,7 +22,6 @@ import android.widget.ListView;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import android.view.inputmethod.InputMethodManager;
@@ -41,13 +38,11 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
-import static android.R.attr.checked;
+
+public class ShoppinglistItem extends Activity {
 
 
-public class MainActivity extends Activity {
-
-
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static final String LOG_TAG = ShoppinglistItem.class.getSimpleName();
     private DatenbankMemoDataSource dataSource;
 
     ImageView shoppingimage;
@@ -63,8 +58,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Titel verstecken
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.shopping_list_item);
 
 
         Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
@@ -88,73 +84,10 @@ public class MainActivity extends Activity {
                     startActivityForResult(intent1, KITKAT_VALUE);
                 }
 
-                /*
-                intent1 = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                intent1.setType("image/*");
-                startActivityForResult(intent1,requcode );
-                */
             }
         });
     }
 
-        //Berechtigung der Kamera Zugriff
-       /* if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            shoppingimage.setEnabled(false);
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},CAPTURE_PHOTO);
-        }else{
-            shoppingimage.setEnabled(true);
-        }
-
-        dbHelper = new DatenbankMemoHelper(this);
-    }
-   /* public void onClickpickimage (View view) {
-        new MaterialDialog.Builder(this)
-                .title("Suchen Sie Bild aus: ")
-                .items(R.array.uploadImages)
-                .itemsIds(R.array.itemIds)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                        switch (position) {
-                            case 0:
-                                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                                photoPickerIntent.setType("image/*");
-                                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
-                                break;
-                            case 1:
-                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult(intent, CAPTURE_PHOTO);
-                                break;
-                            case 2:
-                                shoppingimage.setImageResource(R.drawable.test);
-                                break;
-                        }
-                    }
-                })
-                .show();
-    }
-*/
-
-
-   /* public void onClickpickimage (View view) {
-        Log.d("pickimage", "pickimage!!!!");
-        AlertDialog.Builder imgbuilder = new AlertDialog.Builder(this);
-                imgbuilder.setTitle("Suchen Sie Bild aus: ")
-                        .setItems(R.array.uploadImages,new DialogInterface.OnCancelListener(){
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-
-                            }
-
-                            public void onClick(DialogInterface dialog, int item){
-                               Toast.makeText(getContext(),"item",+item, Toast.LENGTH_SHORT).show();
-
-                            }
-
-
-                        });
-
-    }*/
     // ANZEIGEN ALLER EINTRÄGE
     private void showAllListEntries() {
         List<DatenbankMemo> shoppingMemoList = dataSource.getAllShoppingMemos();
@@ -165,9 +98,9 @@ public class MainActivity extends Activity {
         ListView shoppingMemosListView = (ListView) findViewById(R.id.listview_shopping_memos);
         shoppingMemosListView.setAdapter(shoppingMemoArrayAdapter);
 
-/*Überprüfen ob die List nicht leer ist, dann wird das erste Element genommen werden
- Das Bild davon wird gezeigt, wenn den App startet
- */
+    /*Überprüfen ob die List nicht leer ist, dann wird das erste Element genommen werden
+    Das Bild davon wird gezeigt, wenn den App startet
+    */
         if(!shoppingMemoList.isEmpty()) {
             try {
                 DatenbankMemo firstitem = shoppingMemoList.get(0);
@@ -236,7 +169,6 @@ public class MainActivity extends Activity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-
                 String quantityString = editTextQuantity.getText().toString();
                 String product = editTextProduct.getText().toString();
 
