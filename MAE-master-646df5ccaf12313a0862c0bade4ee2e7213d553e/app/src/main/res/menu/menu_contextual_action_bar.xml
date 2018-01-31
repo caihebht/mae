@@ -11,10 +11,5 @@
         android:id="@+id/cab_delete"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/cab_delete" />
-    <item
-        android:id="@+id/show_image"
-        android:title="B"
-
-        />
 
 </menu>

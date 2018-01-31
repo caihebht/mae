@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -37,6 +38,8 @@ import android.widget.AbsListView;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+
+import static android.R.attr.checked;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -160,12 +163,27 @@ public class MainActivity extends AppCompatActivity{
                 this,
                 android.R.layout.simple_list_item_multiple_choice,
                 shoppingMemoList);
-
         ListView shoppingMemosListView = (ListView) findViewById(R.id.listview_shopping_memos);
         shoppingMemosListView.setAdapter(shoppingMemoArrayAdapter);
+
+/*Überprüfen ob die List nicht leer ist, dann wird das erste Element genommen werden
+ Das Bild davon wird gezeigt, wenn den App startet
+ */
+        if(!shoppingMemoList.isEmpty()) {
+            try {
+                DatenbankMemo firstitem = shoppingMemoList.get(0);
+                Uri showimageuri = Uri.parse(firstitem.getImagepath());
+                minputStream = getContentResolver().openInputStream(showimageuri);
+                bitmap = BitmapFactory.decodeStream(minputStream);
+                shoppingimage.setImageBitmap(bitmap);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    // ÖFFNEN UND SCHLIEßEN DER DATENBANK - LOG STATEMENTS IN DER CONSOLE
+        // ÖFFNEN UND SCHLIEßEN DER DATENBANK - LOG STATEMENTS IN DER CONSOLE
     @Override
     protected void onResume() {
         super.onResume();
@@ -328,12 +346,30 @@ public class MainActivity extends AppCompatActivity{
                 return true;
             }
 
+
             // In dieser Callback-Methode reagieren wir auf Action Item-Klicks
             // Je nachdem ob das Löschen- oder Ändern-Symbol angeklickt wurde
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 boolean returnValue = true;
                 SparseBooleanArray touchedShoppingMemosPositions = shoppingMemosListView.getCheckedItemPositions();
+
+                boolean checked = touchedShoppingMemosPositions.valueAt(0);
+                if (checked) {
+                    int postitionInListViewx = touchedShoppingMemosPositions.keyAt(0);
+                    DatenbankMemo shoppingMemo = (DatenbankMemo) shoppingMemosListView.getItemAtPosition(postitionInListViewx);
+                    Log.d(LOG_TAG, "Position im ListView: " + postitionInListViewx + " Inhalt: " + shoppingMemo.toString());
+
+                    Uri showimageuri = Uri.parse(shoppingMemo.getImagepath());
+                    try {
+                        minputStream = getContentResolver().openInputStream(showimageuri);
+                        bitmap = BitmapFactory.decodeStream(minputStream);
+                        shoppingimage.setImageBitmap(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        Log.d ("exception","Fehler!!!!");
+                    }
+                }
 
 
 
@@ -369,26 +405,8 @@ public class MainActivity extends AppCompatActivity{
 
                         mode.finish();
                         break;
-                    case R.id.show_image:
-                        Log.d(LOG_TAG, "Bild Zeigen");
-                        boolean isChecked = touchedShoppingMemosPositions.valueAt(0);
-                        if (isChecked) {
-                            int postitionInListView = touchedShoppingMemosPositions.keyAt(0);
-                            DatenbankMemo shoppingMemo = (DatenbankMemo) shoppingMemosListView.getItemAtPosition(postitionInListView);
-                            Log.d(LOG_TAG, "Position im ListView: " + postitionInListView + " Inhalt: " + shoppingMemo.toString());
 
-                            Uri showimageuri = Uri.parse(shoppingMemo.getImagepath());
-                            try {
-                                minputStream = getContentResolver().openInputStream(showimageuri);
-                                bitmap = BitmapFactory.decodeStream(minputStream);
-                                shoppingimage.setImageBitmap(bitmap);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                                Log.d ("exception","Fehler!!!!");
-                            }
-                        }
-                        mode.finish();
-                        break;
+
 
 
                     default:

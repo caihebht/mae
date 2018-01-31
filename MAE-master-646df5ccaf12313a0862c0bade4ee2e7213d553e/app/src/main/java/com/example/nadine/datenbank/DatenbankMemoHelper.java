@@ -18,16 +18,17 @@ public class DatenbankMemoHelper extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
 
     // Einkaufslist Artikel
-    public static final String TABLE_SHOPPING_LISTITEM = "shopping_listitems";
+    public static final String TABLE_SHOPPING_LISTITEM = "shoppinglistitems";
     public static final String COLUMN_SHOPPINGLISTITEM_ID = "_id";
     public static final String COLUMN_PRODUCT = "product";
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_IMAGE_PATH = "imagepath";
 
     // Einkaufslist übersicht
-    public static final  String TABLE_SHOPPINGLIST = "shopping_list";
+   /* public static final  String TABLE_SHOPPINGLIST = "shopping_list";
     public static final  String COLUMN_ID = "shoppinglist_id";
     public static final  String COLUMN_SHOPPLIST_NAME = "name";
+    */
 
 
     // SQL statment zum Erzeugen von Einkaufslist Artikel
@@ -46,6 +47,7 @@ public class DatenbankMemoHelper extends SQLiteOpenHelper {
     }
 
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
@@ -56,6 +58,7 @@ public class DatenbankMemoHelper extends SQLiteOpenHelper {
             Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
         }
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
