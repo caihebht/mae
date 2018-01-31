@@ -14,7 +14,8 @@
     <ImageView
         android:id="@+id/shoppingimage"
         android:layout_width="400dp"
-        android:layout_height="220dp" />
+        android:layout_height="220dp"
+        android:layout_alignParentTop="true" />
 
     <RelativeLayout
         android:orientation="horizontal"

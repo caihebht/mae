@@ -1,5 +1,6 @@
 package com.example.nadine.datenbank;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
 
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,7 +44,7 @@ import android.view.LayoutInflater;
 import static android.R.attr.checked;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends Activity {
 
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -58,15 +60,12 @@ public class MainActivity extends AppCompatActivity{
     public static final int KITKAT_VALUE = 1002;
 
 
-
-    private static final int SELECT_PHOTO =1;
-    private static final int CAPTURE_PHOTO =2;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
 
         Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");
         dataSource = new DatenbankMemoDataSource(this);
@@ -471,13 +470,14 @@ public class MainActivity extends AppCompatActivity{
 
         return builder.create();
     }
-
+/*
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+   public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it minputStream present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -493,5 +493,6 @@ public class MainActivity extends AppCompatActivity{
 
         return super.onOptionsItemSelected(item);
     }
+    */
 
 }

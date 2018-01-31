@@ -17,5 +17,18 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <string-array name="listinhalt">
+        <item>Mousse au Chocolat</item>
+        <item>Kartoffelgratin</item>
+        <item>Spaghetti Bolognese</item>
+        <item>Lasagne</item>
+        <item>Tiramisu</item>
+        <item>Nudel mit Rahmsoße</item>
+        <item>Reispfanne</item>
+        <item>Tomatensuppe</item>
+        <item>Chicken Curry</item>
+        <item>Käsekuchen</item>
+    </string-array>
+
 
 </resources>
