@@ -45,7 +45,7 @@ public class DatenbankMemoDataSource {
         Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen.");
     }
 
-    // ERSTELLEN DER DATENBANK
+    // SPEICHERN DER DATEN IN DER DATENBANK
     public DatenbankMemo createDatenbankMemo(String product, int quantity, String imagepath) {
         ContentValues values = new ContentValues();
         values.put(DatenbankMemoHelper.COLUMN_PRODUCT, product);
