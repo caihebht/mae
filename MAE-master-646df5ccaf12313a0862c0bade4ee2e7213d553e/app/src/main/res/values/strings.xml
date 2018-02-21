@@ -20,5 +20,12 @@
     <string name="dialog_title_product">Produkt:</string>
     <string name="dialog_button_positive">Ändern</string>
     <string name="dialog_button_negative">Abbrechen</string>
+    <string name="dialog_shoppinglist">Name: </string>
+    <string name="dialog_shoppinglist_button_text">Bild Einfügen</string>
+    <string name="add_new_shoppinglist">add</string>
+    <string name="dialog_addshoppinglist">hinfügen</string>
+    <string name="dialog_cancelshoppinglist">löschen</string>
+
+
 
 </resources>

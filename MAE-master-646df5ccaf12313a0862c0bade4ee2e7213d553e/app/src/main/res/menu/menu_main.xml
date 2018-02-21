@@ -1,6 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.nadine.datenbank.ShoppinglistItem">
+    tools:context="com.example.nadine.datenbank.Shoppinglist">
+
+    <item
+        android:id ="@+id/action_addshoppinglist"
+        android:title="@string/add_new_shoppinglist"
+        android:icon ="@android:drawable/ic_menu_add"
+        android:orderInCategory="100" />
+
 
 </menu>

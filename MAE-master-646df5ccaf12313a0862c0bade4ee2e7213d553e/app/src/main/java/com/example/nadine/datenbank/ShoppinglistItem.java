@@ -58,7 +58,7 @@ public class ShoppinglistItem extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Titel verstecken
+        // Titel ausblenden
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.shopping_list_item);
 
@@ -99,8 +99,8 @@ public class ShoppinglistItem extends Activity {
         shoppingMemosListView.setAdapter(shoppingMemoArrayAdapter);
 
     /*Überprüfen ob die List nicht leer ist, dann wird das erste Element genommen werden
-    Das Bild davon wird gezeigt, wenn den App startet
-    */
+    Das Bild davon wird gezeigt, wenn der App startet
+
         if(!shoppingMemoList.isEmpty()) {
             try {
                 DatenbankMemo firstitem = shoppingMemoList.get(0);
@@ -113,6 +113,7 @@ public class ShoppinglistItem extends Activity {
                 e.printStackTrace();
             }
         }
+         */
     }
 
         // ÖFFNEN UND SCHLIEßEN DER DATENBANK - LOG STATEMENTS IN DER CONSOLE
@@ -215,7 +216,7 @@ public class ShoppinglistItem extends Activity {
                    cursor.close();
                }
 
-                dataSource.createDatenbankMemo(product, quantity, imagepath);
+                dataSource.createDatenbankMemo(product, quantity);
                 InputMethodManager inputMethodManager;
                 inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 if (getCurrentFocus() != null) {
@@ -284,7 +285,7 @@ public class ShoppinglistItem extends Activity {
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 boolean returnValue = true;
                 SparseBooleanArray touchedShoppingMemosPositions = shoppingMemosListView.getCheckedItemPositions();
-
+/*
                 boolean checked = touchedShoppingMemosPositions.valueAt(0);
                 if (checked) {
                     int postitionInListViewx = touchedShoppingMemosPositions.keyAt(0);
@@ -301,7 +302,7 @@ public class ShoppinglistItem extends Activity {
                         Log.d ("exception","Fehler!!!!");
                     }
                 }
-
+*/
 
 
                 switch (item.getItemId()) {

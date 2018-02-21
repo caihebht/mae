@@ -16,7 +16,6 @@ public class DatenbankMemo {
         this.product = product;
         this.quantity = quantity;
         this.id = id;
-        this.imagepath = imagepath;
     }
 
 
@@ -42,10 +41,6 @@ public class DatenbankMemo {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getImagepath (){
-        return imagepath;
     }
 
     @Override

@@ -52,17 +52,6 @@
             android:layout_toRightOf="@+id/editText_quantity"
             android:layout_toEndOf="@+id/editText_quantity" />
 
-        <Button
-            android:id="@+id/pick_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/button_add_product"
-            android:layout_toStartOf="@+id/button_add_product"
-            android:icon="@android:drawable/ic_menu_edit"
-            android:onClick="onClickpickimage"
-            android:text="Bild hinfügen"
-            android:textSize="9sp" />
 
         <Button
             android:layout_width="wrap_content"

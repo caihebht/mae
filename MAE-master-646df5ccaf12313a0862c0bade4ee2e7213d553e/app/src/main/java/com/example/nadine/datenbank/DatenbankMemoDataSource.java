@@ -5,6 +5,7 @@ package com.example.nadine.datenbank;
  */
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -20,18 +21,28 @@ public class DatenbankMemoDataSource {
 
     private SQLiteDatabase database;
     private DatenbankMemoHelper dbHelper;
+    private Context mContext;
 
-    private String[] columns = {
+    private String[] columnsitem = {
             DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID,
             DatenbankMemoHelper.COLUMN_PRODUCT,
-            DatenbankMemoHelper.COLUMN_QUANTITY,
-            DatenbankMemoHelper.COLUMN_IMAGE_PATH
+            DatenbankMemoHelper.COLUMN_QUANTITY
     };
 
+
+
+
     // VERBINDUNG ZUR DATENBANK
-    public DatenbankMemoDataSource(Context context) {
-        Log.d(LOG_TAG, "Unsere DataSource erzeugt jetzt den dbHelper.");
+    public DatenbankMemoDataSource(Context context){
         dbHelper = new DatenbankMemoHelper(context);
+        this.mContext = context;
+        // Datenbanköffnen
+        try{
+            open();
+        }catch (SQLException e) {
+            Log.e(LOG_TAG, "Fehler bei den Öffnen der Datenbank" + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void open() {
@@ -46,20 +57,19 @@ public class DatenbankMemoDataSource {
     }
 
     // SPEICHERN DER DATEN IN DER DATENBANK
-    public DatenbankMemo createDatenbankMemo(String product, int quantity, String imagepath) {
+    public DatenbankMemo createDatenbankMemo(String product, int quantity) {
         ContentValues values = new ContentValues();
         values.put(DatenbankMemoHelper.COLUMN_PRODUCT, product);
         values.put(DatenbankMemoHelper.COLUMN_QUANTITY, quantity);
-        values.put(DatenbankMemoHelper.COLUMN_IMAGE_PATH, imagepath);
 
         long insertId = database.insert(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM, null, values);
 
         Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
-                columns, DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + insertId,
+                columnsitem, DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + insertId,
                 null, null, null, null);
 
         cursor.moveToFirst();
-        DatenbankMemo shoppingMemo = cursorToDatenbankMemo(cursor);
+        DatenbankMemo shoppingMemo = cursorToDatenbankMemoitem(cursor);
         cursor.close();
 
         return shoppingMemo;
@@ -87,17 +97,17 @@ public class DatenbankMemoDataSource {
                 null);
 
         Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
-                columns, DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + id,
+                columnsitem, DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID + "=" + id,
                 null, null, null, null);
 
         cursor.moveToFirst();
-        DatenbankMemo datenbankMemo = cursorToDatenbankMemo(cursor);
+        DatenbankMemo datenbankMemo = cursorToDatenbankMemoitem(cursor);
         cursor.close();
 
         return datenbankMemo;
     }
 
-    private DatenbankMemo cursorToDatenbankMemo(Cursor cursor) {
+    private DatenbankMemo cursorToDatenbankMemoitem(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_SHOPPINGLISTITEM_ID);
         int idProduct = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_PRODUCT);
         int idQuantity = cursor.getColumnIndex(DatenbankMemoHelper.COLUMN_QUANTITY);
@@ -119,19 +129,19 @@ public class DatenbankMemoDataSource {
         List<DatenbankMemo> shoppingMemoList = new ArrayList<>();
 
         Cursor cursor = database.query(DatenbankMemoHelper.TABLE_SHOPPING_LISTITEM,
-                columns, null, null, null, null, null);
+                columnsitem, null, null, null, null, null);
 
         cursor.moveToFirst();
-        DatenbankMemo shoppingMemo;
+        DatenbankMemo datenbankmemo;
 
         /* während der cursor nicht bis letzte Zeile läuft, wird pro Rheihe eine DatenbankMemo (bzw ein Datensatz)
             durch den Methode cursoToDatenbanMemo generierte, und dann zu shoppingMenoList hingefügt
          */
 
         while (!cursor.isAfterLast()) {
-            shoppingMemo = cursorToDatenbankMemo(cursor);
-            shoppingMemoList.add(shoppingMemo);
-            Log.d(LOG_TAG, "ID: " + shoppingMemo.getId() + ", Inhalt: " + shoppingMemo.toString() + " Bildpfade: "+ shoppingMemo.getImagepath());
+            datenbankmemo = cursorToDatenbankMemoitem(cursor);
+            shoppingMemoList.add(datenbankmemo);
+            Log.d(LOG_TAG, "ID: " + datenbankmemo.getId() + ", Inhalt: " + datenbankmemo.toString());
             cursor.moveToNext();
         }
 
@@ -139,4 +149,22 @@ public class DatenbankMemoDataSource {
 
         return shoppingMemoList;
     }
+
+    public List<DatenbankMemo> getItemofShoppinglist ( long shoppinglistId){
+        List<DatenbankMemo> artikellist = new ArrayList<DatenbankMemo>();
+
+        Cursor cursor = database.query(dbHelper.TABLE_SHOPPING_LISTITEM, columnsitem,
+                                        dbHelper.COLUMN_SHOPPINGLIST_ID+ " = ?",
+                new String [] {String.valueOf(shoppinglistId)},null,null,null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()){
+            DatenbankMemo artikel = cursorToDatenbankMemoitem(cursor);
+            artikellist.add(artikel);
+            cursor.moveToNext();
+
+        }
+        cursor.close();
+        return artikellist;
+    }
+
 }
